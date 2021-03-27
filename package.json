@@ -1,0 +1,30 @@
+{
+  "name": "ajax-security-mqtt",
+  "displayName": "Ajax Security UART to MQTT bridge",
+  "version": "1.0.0",
+  "description": "Bridge between Ajax uartBridge and MQTT",
+  "license": "Unlicense",
+  "main": "src/index.js",
+  "keywords": [
+    "ajax-uart-bridge",
+    "ajax-fireprotect",
+    "ajax-homeassistant",
+    "ajax-mqtt"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node -r esm ./src/index.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "async-mqtt": "^2.6.1",
+    "consola": "^2.15.3",
+    "esm": "^3.2.25",
+    "js-yaml": "^4.0.0",
+    "node-cleanup": "^2.1.2",
+    "serialport": "^9.0.1"
+  },
+  "devDependencies": {}
+}
