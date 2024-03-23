@@ -6,6 +6,7 @@ export const MessageRstate = 'RSTATE';
 export const MessageEvent = 'EVENT';
 export const MessageDevinfo = 'DEVINFO';
 export const MessageTread = 'TREAD';
+export const MessageResult = 'RESULT';
 export const MessageUnsupported = '_UNKNOWN_';
 
 export const DeviceType = {
@@ -71,22 +72,22 @@ const SCHEMA_STATUS_SHORT = {
     fields: {
         device_type: Number,
         device_id: String,
-        device_number: Number,
-        slot_number: Number,
-        slot_superframe_number: Number,
-        num_pack: Number,
-        noise: Number,
-        rssi: Number,
-        battery_ok: (value) => value === '0',
+        device_number: Number,            // System number of device (sequence number in a system)
+        slot_number: Number,              // Slot number of device
+        slot_superframe_number: Number,   // The slot number for the superframe
+        num_pack: Number,                 // Package number from device
+        noise: Number,                    // Noise level received from the device
+        rssi: Number,                     // Signal level received from the device
+        battery_ok: value => value === '0',
         setting_byte_1: String,
         setting_byte_2: String,
-        sync_shift: Number,
-        skipped_count: Number,
-        frequency_error: Number,
-        active_ant: Number,
-        worst_ant_rssi: Number,
-        sensor_condition_ok: (value) => value === '0',
-        current_frequency: Number,
+        sync_shift: Number,                // Detector synchronization deviation from system in ms
+        skipped_count: Number,             // Amount of missed statuses in a row since current received status
+        frequency_error: Number,           // Frequency deviation in Hz
+        active_ant: Number,                // Active aerial 0 or 1
+        worst_ant_rssi: Number,            // Reception level with the worst aerial
+        tamper_ok: value => value === '0', // Sensor state (tamper, hermetic contact, terminal)
+        current_frequency: Number,         // Frequency on which the status was received (868.0 or 868.5)
     },
 };
 
@@ -97,26 +98,7 @@ const SCHEMA_STATUS_SHORT = {
 const SCHEMA_STATUS_LONG = {
     regex: new RegExp(/^STATUS;([\w\.\-;]+);$/, 'i'),
     id: MessageStatusLong,
-    fields: {
-        device_type: Number,
-        device_id: String,
-        device_number: Number,
-        slot_number: Number,
-        slot_superframe_number: Number,
-        num_pack: Number,
-        noise: Number,
-        rssi: Number,
-        battery_ok: (value) => value === '0',
-        setting_byte_1: String,
-        setting_byte_2: String,
-        sync_shift: Number,
-        skipped_count: Number,
-        frequency_error: Number,
-        active_ant: Number,
-        worst_ant_rssi: Number,
-        sensor_condition_ok: (value) => value === '0',
-        current_frequency: Number,
-    },
+    fields: { ...SCHEMA_STATUS_SHORT.fields },
 };
 
 const SCHEMA_DEVINFO = {
@@ -130,7 +112,7 @@ const SCHEMA_DEVINFO = {
         noise: Number,
         rssi: Number,
         rssi_remote: Number, 
-        battery_voltage: (value) => parseInt(value) / 10,
+        battery_voltage: value => parseInt(value, 10) / 10,
         power: Number,
         sync_shift: Number,
         setting_byte_1: String,
@@ -140,8 +122,8 @@ const SCHEMA_DEVINFO = {
         skipped_count: Number,
         mrr_skip: Number,
         frequency_error: Number,
-        reserve_battery_ok: (value) => value === '0',
-        reserve_battery_voltage: (value) => parseInt(value) / 10,
+        backup_battery_ok: value => value === '0',
+        backup_battery_voltage: value => parseInt(value, 10) / 10,
         chamber_dust_percent: Number,
         thermopair_temperature: Number,
     },
@@ -177,6 +159,9 @@ const SCHEMA_RSTATE = {
     },
 };
 
+/**
+ * Bridge bootup message.
+ */
 const SCHEMA_RALLSTATE = {
     regex: new RegExp(/^RALLSTATE;([\w\.\-;=/\s]+);$/, 'i'),
     id: MessageRallstate,
@@ -190,7 +175,7 @@ const SCHEMA_RALLSTATE = {
         SET: ['engineering_mode', (value) => value === '0'],
         CTM: ['communication_test_mode', (value) => value === '1'],
         STM: ['detection_zone_test_mode', (value) => value === '1'],
-        WFA: ['awaiting_answer', (value) => value === '1'],
+        WFA: ['awaiting_answer', (value) => ['1', 'Y/N'].includes(value.toString())],
         EXT: ['display_extended_info_messages', (value) => value === '1'],
         ECH: ['echo_commands', (value) => value === '1'],
         INF: ['display_info_messages', (value) => value === '1'],
@@ -217,13 +202,14 @@ const SCHEMA_ALARM = {
 };
 
 const SCHEMA_EVENT = {
-    regex: new RegExp(/^EVENT;([\w\.\-;=\s]+);?$/, 'i'), 
+    regex: new RegExp(/^EVENT((:?;[^;]+)+);?$/, 'i'), 
     id: MessageEvent,
     fields: {
         device_id: String,
     },
     kwargs: {
         VER: ['version', String],
+        TYP: ['device_type', Number],
         HNL: ['high_noise_level', Number],
         AUT: ['auth_success', (value) => value === '0'], // TODO: other responses
         LOD: ['settings_load_success', (value) => value === '1'],
@@ -235,7 +221,7 @@ const SCHEMA_EVENT = {
         ATO: ['configurator_timeout_shutdown', (value) => value === '0'],
         SCH: ['search_result', Number],
         NEW: ['new_device', (value) => value === '1'],
-        WFA: ['awaiting_answer', String],
+        WFA: ['awaiting_answer', (value) => ['1', 'Y/N'].includes(value.toString())],
         FRE: ['subframe_free_cells', Number],
         SPC: ['subframe_cell_count', Number],
         RED: ['extended_info_read_success', (value) => value === '1'],
@@ -260,6 +246,16 @@ const SCHEMA_TREAD = {
     },
 };
 
+const SCHEMA_RESULT = {
+    regex: new RegExp(/^RESULT;([\w\.\-;=\s]+);$/, 'i'),
+    id: MessageResult,
+    fields: {
+        success: (value) => value === 'OK',
+        exit_code: Number,
+        device_id: () => 'SYSTEM',
+    },
+};
+
 export const SupportedMessages = [
     SCHEMA_STATUS_SHORT,
     SCHEMA_STATUS_LONG,
@@ -269,4 +265,5 @@ export const SupportedMessages = [
     SCHEMA_ALARM,
     SCHEMA_EVENT,
     SCHEMA_TREAD,
+    SCHEMA_RESULT,
 ];
