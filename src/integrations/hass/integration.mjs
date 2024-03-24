@@ -2,6 +2,7 @@ import { AjaxFireProtect, AjaxFireProtectPlus, AjaxBridge } from '#src/ajax/devi
 import { MqttMessage } from '#src/integrations/hass/message.mjs';
 import { schema } from '#src/integrations/hass/common.mjs';
 import { BaseWrapper } from '#src/integrations/base/integration.mjs';
+import createLogger from '#src/log.mjs';
 import {
     A2M_APP_NAME,
     A2M_APP_SUPPORT_URL,
@@ -16,9 +17,11 @@ import {
  */
 export class HassWrapper {
     #device = undefined;
+    #log = undefined;
 
     constructor(device) {
         this.#device = device;
+        this.#log = createLogger({ tag: 'hass' });
     }
 
     /**
@@ -273,7 +276,7 @@ export class HassWrapper {
 
                 return armActions.has(payload)
                     ? await armActions.get(payload)()
-                    : this.log.error(`Invalid payload for arm action: ${payload}`);
+                    : this.#log.error(`Invalid payload for arm action: ${payload}`);
             });
 
             // Define actions for pairing mode switch:
@@ -287,7 +290,7 @@ export class HassWrapper {
 
                 return joinActions.has(payload)
                     ? await joinActions.get(payload)()
-                    : this.log.error(`Invalid payload for arm action: ${payload}`);
+                    : this.#log.error(`Invalid payload for arm action: ${payload}`);
             });
         }
 
