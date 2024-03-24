@@ -267,8 +267,8 @@ export class HassWrapper {
             // Define actions for alarm control panel:
             actions.set(is_armed.command_topic, async (payload) => {
                 const armActions = new Map([
-                    [arm.payload_disarm, this.#device.disarm],
-                    [arm.payload_arm_home, this.#device.arm],
+                    [is_armed.payload_disarm, this.#device.disarm],
+                    [is_armed.payload_arm_home, this.#device.arm],
                 ]);
 
                 return armActions.has(payload)
