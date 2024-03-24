@@ -1,7 +1,8 @@
-import { A2M_MQTT_BASE_TOPIC, A2M_HASS_BASE_TOPIC } from '#src/config.mjs';
+import { A2M_MQTT_BASE_TOPIC, A2M_HASS_BASE_TOPIC, A2M_HASS_USE_SHARED_STATE_TOPIC } from '#src/config.mjs';
 import { AjaxFireProtect, AjaxFireProtectPlus, AjaxBridge } from '#src/ajax/devices/index.mjs';
-import { MqttMessage } from '#src/hass/message.mjs';
-import { schema } from '#src/hass/common.mjs';
+import { MqttMessage } from '#src/integrations/hass/message.mjs';
+import { schema } from '#src/integrations/hass/common.mjs';
+import { BaseWrapper } from '#src/integrations/base/integration.mjs';
 
 /**
  * This class enables homeassistant mqtt integration with ajax devices.
@@ -85,7 +86,7 @@ export class HassWrapper {
                         'payload_on': true,
                         'name': 'Permit join',
                     },
-                    arm: {
+                    is_armed: {
                         '@type': 'alarm_control_panel',
                         'code_arm_required': false,
                         'code_disarm_required': false,
@@ -114,7 +115,7 @@ export class HassWrapper {
      * @param  {String} key
      * @return {String}
      */
-    #getMqttSensorUniqueId(key) {
+    #getHassSensorUniqueId(key) {
         return `ajax2mqtt_${this.#device.deviceId}_${key}`;
     }
 
@@ -124,9 +125,12 @@ export class HassWrapper {
      * @return {String}
      */
     #buildMqttDeviceTopic(suffix) {
+        const prefix = 'hass';
+
         return [
             A2M_MQTT_BASE_TOPIC,
             this.#device.deviceId,
+            prefix,
             suffix,
         ].filter(Boolean).join('/');
     }
@@ -143,7 +147,9 @@ export class HassWrapper {
      * @return {String}
      */
     #getMqttSensorStateTopic() {
-        return this.#buildMqttDeviceTopic('state');
+        return A2M_HASS_USE_SHARED_STATE_TOPIC
+            ? BaseWrapper.getMqttSensorStateTopicByDeviceId(this.#device.deviceId) // Hooking to base integration state topic
+            : this.#buildMqttDeviceTopic('state'); // Use separate topics for hass and base integration
     }
 
     /**
@@ -168,7 +174,7 @@ export class HassWrapper {
                 platform: 'mqtt',
                 device: deviceConfig,
                 value_template: `{{ value_json.${sensorName} }}`,
-                unique_id: this.#getMqttSensorUniqueId(sensorName),
+                unique_id: this.#getHassSensorUniqueId(sensorName),
                 state_topic: this.#getMqttSensorStateTopic(),
                 availability_topic: this.#getMqttSensorAvailabilityTopic(),
                 ...sensorConfig,
@@ -180,7 +186,7 @@ export class HassWrapper {
             }
 
             return new MqttMessage({
-                topic: `${A2M_HASS_BASE_TOPIC}/${sensorType}/${this.#getMqttSensorUniqueId(sensorName)}/config`,
+                topic: `${A2M_HASS_BASE_TOPIC}/${sensorType}/${this.#getHassSensorUniqueId(sensorName)}/config`,
                 options: this.#getMqttPublishOptions(),
                 payload,
             });
@@ -188,7 +194,6 @@ export class HassWrapper {
     }
 
     /**
-     * This method generates MQTT messages to be broadcasted on device state change.
      * @param {?String[]}  changedKeys  Empty to publish the whole state
      * @return {MqttMessage[]}
      */
@@ -216,6 +221,17 @@ export class HassWrapper {
     }
 
     /**
+     * This method generates MQTT messages to be broadcasted on device state change.
+     * @param {?String[]}  changedKeys  Empty to publish the whole state
+     * @return {MqttMessage[]}
+     */
+    getStateUpdateMessages(changedKeys) {
+        return A2M_HASS_USE_SHARED_STATE_TOPIC
+            ? [] // Don't post anything, since we're hooked to the base integration topic
+            : this.getHassStateUpdateMessages(changedKeys); // Otherwise post updates to separate hass topic
+    }
+
+    /**
      * Returns device actions with mqtt command topics.
      * @return {Map<String, Promise>}
      */
@@ -223,10 +239,10 @@ export class HassWrapper {
         const actions = new Map;
 
         if (this.#device.constructor === AjaxBridge) {
-            const { arm, permit_join } = this.#getDeviceExposedSensors();
+            const { is_armed, permit_join } = this.#getDeviceExposedSensors();
 
             // Define actions for alarm control panel:
-            actions.set(arm.command_topic, async (payload) => {
+            actions.set(is_armed.command_topic, async (payload) => {
                 const armActions = new Map([
                     [arm.payload_disarm, this.#device.disarm],
                     [arm.payload_arm_home, this.#device.arm],
@@ -256,7 +272,7 @@ export class HassWrapper {
     /**
      * @return {MqttMessage[]}
      */
-    getHassDeviceAvailabilityMessages() {
+    getDeviceAvailabilityMessages() {
         const message = new MqttMessage({
             topic: this.#getMqttSensorAvailabilityTopic(),
             options: this.#getMqttPublishOptions(),

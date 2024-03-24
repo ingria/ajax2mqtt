@@ -188,6 +188,7 @@ const SCHEMA_RALLSTATE = {
         LLS: ['lowest_level_signal', Number],
         FSL: ['free_slot_count', Number],
         FRS: ['seconds_from_frame_start', Number],
+        LOS: ['frame_misses_until_lost', Number],
     },
 };
 

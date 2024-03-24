@@ -1,6 +1,5 @@
 import AjaxAbstractDevice from './AjaxAbstractDevice.mjs';
 import { AlarmType } from '../schema.mjs';
-import { DEVICE_BATTERY_NOMINAL_VOLTAGE } from '../constants.mjs';
 
 /**
  * This class represents an Ajax sensor device (fireProtect, leak detector, etc).
@@ -106,7 +105,9 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
      * @return {Number}
      */
     #calculateBatteryPercentage(voltage) {
-        const percent = Math.round(voltage / DEVICE_BATTERY_NOMINAL_VOLTAGE * 100);
+        const nominalVoltage = 3.0;
+        const percent = Math.round(voltage / nominalVoltage * 100);
+
         return Math.min(100, percent);
     }
 }

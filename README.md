@@ -5,7 +5,7 @@
 ## What is it?
 This app takes messages from [ajax security modules](https://ajax.systems) and sends them via MQTT, making possible to use Ajax devices in your Homeassistant or Homebridge, save telemetry to InfluxDB, etc.
 
-It **doesn’t use Ajax cloud services**, doesn’t require internet connection and doesn’t expose any data outside of local network. However it requires special hardware module to interface Ajax wireless protocol (see [Required Hardware](#required-hardware) section below).
+It doesn’t use Ajax cloud services, doesn’t require internet connection and doesn’t expose any data outside of local network. However it requires special hardware module to interface Ajax wireless protocol (see [Required Hardware](#required-hardware) section below). Setting this module up is trivial and doesn't require special skills or tools.
 
 ### Supported devices
 - [uartBridge](https://ajax.systems/products/uartbridge)
@@ -18,8 +18,23 @@ It **doesn’t use Ajax cloud services**, doesn’t require internet connection 
 - ~~CombiProtect~~
 - ~~LeaksProtect~~
 
+## Integrations
+MQTT interation is done with "integration" abstractions. Right now there are two: **base** and **homeassistant**, but it is possible to create more. Integration watches for device state and sends messages to MQTT broker. Also it listens for command topics and controls the physical devices.
+
+### Base integration
+Base integration sends **all** state changes to `ajax2mqtt/ID/state` topic and subscribes to the following command topics:
+
+- ajax2mqtt/ID/arm
+- ajax2mqtt/ID/disarm
+- ajax2mqtt/ID/allow_join
+- ajax2mqtt/ID/disallow_join
+- ajax2mqtt/ID/unpair _device_id_
+- ajax2mqtt/ID/set_offline_threshold _value_
+
+You may control the device via these topics or create your own integration.
+
 ### Homeassistant integration
-All your Ajax devices will be accessible in HASS thanks to the MQTT discovery. If you don’t need this feature, you can set `A2M_HASS_ENABLED` config value to `false`.
+This integration adds all your Ajax devices to Home Assistant, thanks to the MQTT discovery. If you don’t need this feature, you can set `A2M_HASS_ENABLED` config value to `false`.
 
 <img src="./img_hass.png" width="300">
 

@@ -137,6 +137,7 @@ export class ShowArmStatus extends BridgeCommand {
  * Enable armed mode.
  */
 export class BridgeArm extends BridgeCommand {
+    waitForAck = false;
     command = 'act';
 };
 
@@ -144,7 +145,27 @@ export class BridgeArm extends BridgeCommand {
  * Disarm the system.
  */
 export class BridgeDisarm extends BridgeCommand {
+    waitForAck = false;
     command = 'pas';
+};
+
+/**
+ * Change amount of missed statuses in a row from detector till alarm in case of
+ * lost communication (only in engineer menu, in operation mode outputs current value)
+ */
+export class BridgeSetOfflineThreshold extends BridgeCommand {
+    command = 'los';
+    constructor(arg = 0) {
+        super();
+
+        const value = parseInt(arg, 10);
+
+        if (value < 3 || value > 60) {
+            throw new Error('Value must be between 3 and 60')
+        }
+
+        this.argument = value.toString();
+    }
 };
 
 export default {
@@ -164,4 +185,5 @@ export default {
     ShowArmStatus,
     BridgeArm,
     BridgeDisarm,
+    BridgeSetOfflineThreshold,
 };

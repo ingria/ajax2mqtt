@@ -3,7 +3,6 @@ import { EventEmitter } from 'node:events';
 import { SerialPort, ReadlineParser } from 'serialport';
 import { A2M_SERIAL_PORT, A2M_SERIAL_BAUDRATE, A2M_SERIAL_DELIMITER } from '#src/config.mjs';
 import { MessageStatus, MessageStatusLong, MessageRstate, MessageRallstate, MessageResult } from '#src/ajax/schema.mjs';
-import { BRIDGE_BAUDRATE, BRIDGE_DELIMITER } from '#src/ajax/constants.mjs';
 import { getDeviceByType, AjaxBridge } from '#src/ajax/devices/index.mjs';
 import BridgeCommands from '#src/ajax/commands.mjs';
 import AjaxBus from '#src/ajax/bus.mjs';
@@ -94,6 +93,10 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
 
         this.#port.removeAllListeners('close');
 
+        this.removeAllListeners('deviceStateChange');
+        this.removeAllListeners('deviceReady');
+        this.removeAllListeners('deviceAvailabilityChange');
+
         await this.#port.flush();
         await this.#port.close();
     }
@@ -159,6 +162,15 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
     }
 
     /**
+     * @param  {BridgeCommands.BridgeCommand[]} commands
+     * @return {Promise<undefined>}
+     */
+    async sendCommands(commands) {
+        this.#queue.push(...commands);
+        await this.#runNextCommand();
+    }
+
+    /**
      * Send the message to the UART and acknowlendge receive.
      * @param  {String} command
      * @return {Promise<String>}
@@ -212,7 +224,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
         this.log.debug(`<<< Sending ${command} <<<`);
 
         this.#busy = true;
-        this.#port.write(command.toString() + BRIDGE_DELIMITER);
+        this.#port.write(command.toString() + A2M_SERIAL_DELIMITER);
 
         AjaxBus.on('SYSTEM', handler);
 
@@ -220,15 +232,6 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
         while (this.#busy) {
             await scheduler.wait(100);
         }
-    }
-
-    /**
-     * @param  {BridgeCommands.BridgeCommand[]} commands
-     * @return {Promise<undefined>}
-     */
-    async sendCommands(commands) {
-        this.#queue.push(...commands);
-        await this.#runNextCommand();
     }
 
     /**

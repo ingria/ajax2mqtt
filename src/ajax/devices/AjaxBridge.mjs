@@ -20,13 +20,8 @@ export default class AjaxBridge extends AjaxAbstractDevice {
     getInitialState() {
         return {
             ...super.getInitialState(),
-            arm: undefined,
+            is_armed: undefined,
             permit_join: false,
-            display_timers: undefined,
-            echo_commands: undefined,
-            display_extended_info_messages: undefined,
-            display_info_messages: undefined,
-            display_frame_info: undefined,
         };
     }
 
@@ -40,18 +35,6 @@ export default class AjaxBridge extends AjaxAbstractDevice {
 
         this.setOnline();
         this.#checkUpdateForArmStatusFlag(flags);
-
-        const optionalFlags = [
-            'display_timers',
-            'echo_commands',
-            'display_extended_info_messages',
-            'display_info_messages',
-            'display_frame_info',
-        ];
-
-        optionalFlags
-            .filter(key => key in flags)
-            .forEach(key => this.setStateAttribute(key, flags[key]));
     }
 
     /**
@@ -77,7 +60,7 @@ export default class AjaxBridge extends AjaxAbstractDevice {
      */
     #checkUpdateForArmStatusFlag({ is_armed }) {
         if (is_armed !== undefined) {
-            this.setStateAttribute('arm', is_armed);
+            this.setStateAttribute('is_armed', is_armed);
         }
     }
 
@@ -173,6 +156,18 @@ export default class AjaxBridge extends AjaxAbstractDevice {
     async disarm() {
         return await this.platform.sendCommands([
             new BridgeCommands.BridgeDisarm(),
+        ]);
+    }
+
+    /**
+     * @param  {Number} value
+     * @return {Promise<undefined>}
+     */
+    async setOfflineThreshold(value) {
+        return await this.platform.sendCommands([
+            new BridgeCommands.EnableEngineeringMode(),
+            new BridgeCommands.BridgeSetOfflineThreshold(value),
+            new BridgeCommands.EnableWorkMode(),
         ]);
     }
 }
