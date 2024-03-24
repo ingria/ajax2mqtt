@@ -18,7 +18,9 @@ if (A2M_HASS_ENABLED) {
 
 await Bridge.bootBridge();
 
-process.on('SIGINT', async () => {
-    await Bridge.destroy();
-    setTimeout(() => process.exit(0), 200); // Wait for mqtt broker to accept last will messages
+['SIGTERM', 'SIGINT'].forEach((signal) => {
+    process.on((signal), async () => {
+        await Bridge.destroy();
+        setTimeout(() => process.exit(0), 200); // Wait for mqtt broker to accept last will messages
+    });
 });
