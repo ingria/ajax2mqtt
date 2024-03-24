@@ -1,10 +1,14 @@
 {
-  "name": "ajax-security-mqtt",
+  "name": "ajax2mqtt",
   "displayName": "Ajax Security UART to MQTT bridge",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Bridge between Ajax uartBridge and MQTT",
   "license": "Unlicense",
   "main": "src/index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ingria/ajax2mqtt"
+  },
   "keywords": [
     "ajax-uart-bridge",
     "ajax-fireprotect",

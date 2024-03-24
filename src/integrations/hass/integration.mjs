@@ -1,8 +1,15 @@
-import { A2M_MQTT_BASE_TOPIC, A2M_HASS_BASE_TOPIC, A2M_HASS_USE_SHARED_STATE_TOPIC } from '#src/config.mjs';
 import { AjaxFireProtect, AjaxFireProtectPlus, AjaxBridge } from '#src/ajax/devices/index.mjs';
 import { MqttMessage } from '#src/integrations/hass/message.mjs';
 import { schema } from '#src/integrations/hass/common.mjs';
 import { BaseWrapper } from '#src/integrations/base/integration.mjs';
+import {
+    A2M_APP_NAME,
+    A2M_APP_SUPPORT_URL,
+    A2M_APP_VERSION,
+    A2M_MQTT_BASE_TOPIC,
+    A2M_HASS_BASE_TOPIC,
+    A2M_HASS_USE_SHARED_STATE_TOPIC,
+} from '#src/config.mjs';
 
 /**
  * This class enables homeassistant mqtt integration with ajax devices.
@@ -22,6 +29,16 @@ export class HassWrapper {
     }
 
     /**
+     * @return {String}
+     */
+    #makeHassDeviceName() {
+        const className = this.#device.constructor.name;
+        const deviceName = className.replace('Ajax', '');
+
+        return `${deviceName}#${this.#device.deviceId}`;
+    }
+
+    /**
      * @return {Object}
      */
     #getHassDeviceConfig() {
@@ -30,6 +47,7 @@ export class HassWrapper {
             model: this.#device.deviceModel,
             sw_version: this.#device.deviceName,
             serial_number: this.#device.deviceId,
+            name: this.#makeHassDeviceName(),
             via_device: undefined,
             identifiers: [
                 this.#makeHassDeviceIdentifier(this.#device.deviceId),
@@ -172,6 +190,11 @@ export class HassWrapper {
 
             const payload = {
                 platform: 'mqtt',
+                origin: {
+                    name: A2M_APP_NAME,
+                    support_url: A2M_APP_SUPPORT_URL,
+                    sw_version: A2M_APP_VERSION,
+                },
                 device: deviceConfig,
                 value_template: `{{ value_json.${sensorName} }}`,
                 unique_id: this.#getHassSensorUniqueId(sensorName),

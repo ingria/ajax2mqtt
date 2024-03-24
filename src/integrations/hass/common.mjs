@@ -61,6 +61,7 @@ export const schema = Object.freeze({
         'state_class': 'measurement',
         'name': 'Backup battery voltage',
         'enabled_by_default': false,
+        'icon': 'mdi:battery-plus',
     },
     backup_battery_low: {
         '@type': 'binary_sensor',
@@ -69,6 +70,7 @@ export const schema = Object.freeze({
         'payload_off': false,
         'payload_on': true,
         'name': 'Backup battery status',
+        'icon': 'mdi:battery-plus',
     },
     smoke: {
         '@type': 'binary_sensor',
@@ -84,6 +86,7 @@ export const schema = Object.freeze({
         'payload_off': false,
         'payload_on': true,
         'name': 'Smoke chamber malfunction',
+        'entity_category': 'diagnostic',
     },
     chamber_dust_percent: {
         '@type': 'sensor',
@@ -97,6 +100,7 @@ export const schema = Object.freeze({
         '@type': 'binary_sensor',
         'enabled_by_default': true,
         'device_class': 'carbon_monoxide',
+        'icon': 'mdi:molecule-co',
         'payload_off': false,
         'payload_on': true,
     },
@@ -107,5 +111,6 @@ export const schema = Object.freeze({
         'payload_off': false,
         'payload_on': true,
         'name': 'CO chamber malfunction',
+        'entity_category': 'diagnostic',
     },
 });

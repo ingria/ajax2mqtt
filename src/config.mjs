@@ -1,3 +1,9 @@
+import pkg from '../package.json' assert { type: 'json' };
+
+export const A2M_APP_NAME = pkg.name;
+export const A2M_APP_VERSION = pkg.version;
+export const A2M_APP_SUPPORT_URL = pkg.repository.url;
+
 export const A2M_SERIAL_PORT = process.env.A2M_SERIAL_PORT;
 export const A2M_SERIAL_BAUDRATE = 57600;
 export const A2M_SERIAL_DELIMITER = '\r\n';

@@ -23,4 +23,4 @@ COPY src ./src
 
 ENV NODE_ENV production
 
-CMD [ "/sbin/tini", "--", "node", "src/index.mjs"]
+CMD [ "/sbin/tini", "--", "node", "src/index.mjs" ]
