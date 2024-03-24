@@ -277,7 +277,9 @@ export class HassWrapper {
             });
 
             // Define actions for pairing mode switch:
-            actions.set(permit_join.command_topic, async (payload) => {
+            actions.set(permit_join.command_topic, async (payloadRaw) => {
+                const payload = payloadRaw.toString() === 'True';
+
                 const joinActions = new Map([
                     [permit_join.payload_off, this.#device.enterPairingMode],
                     [permit_join.payload, this.#device.exitPairingMode],
