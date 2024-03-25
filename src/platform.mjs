@@ -2,7 +2,7 @@ import { scheduler } from 'node:timers/promises';
 import { EventEmitter } from 'node:events';
 import { SerialPort, ReadlineParser } from 'serialport';
 import { A2M_SERIAL_PORT, A2M_SERIAL_BAUDRATE, A2M_SERIAL_DELIMITER } from '#src/config.mjs';
-import { MessageStatus, MessageStatusLong, MessageRstate, MessageRallstate, MessageResult } from '#src/ajax/schema.mjs';
+import { MessageStatus, MessageStatusLong, MessageRstate, MessageRallstate, MessageResult, MessageEvent } from '#src/ajax/schema.mjs';
 import { getDeviceByType, AjaxBridge } from '#src/ajax/devices/index.mjs';
 import BridgeCommands from '#src/ajax/commands.mjs';
 import AjaxBus from '#src/ajax/bus.mjs';
@@ -126,6 +126,12 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
                 this.#registerDevice(msg);
                 break;
             }
+        }
+
+        // Sometimes we receive events from unregistered device (e.g. when in pairing mode).
+        // Re-route such events to the bridge:
+        if (msg.type === MessageEvent && !this.#devices.has(msg.device_id)) {
+            AjaxBus.emit('SYSTEM', msg);
         }
     }
 
