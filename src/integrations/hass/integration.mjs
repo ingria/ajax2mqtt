@@ -270,8 +270,8 @@ export class HassWrapper {
             // Define actions for alarm control panel:
             actions.set(is_armed.command_topic, async (payload) => {
                 const armActions = new Map([
-                    [is_armed.payload_disarm, this.#device.disarm],
-                    [is_armed.payload_arm_home, this.#device.arm],
+                    [is_armed.payload_disarm, () => this.#device.disarm()],
+                    [is_armed.payload_arm_home, () => this.#device.arm()],
                 ]);
 
                 return armActions.has(payload)
@@ -281,11 +281,12 @@ export class HassWrapper {
 
             // Define actions for pairing mode switch:
             actions.set(permit_join.command_topic, async (payloadRaw) => {
-                const payload = payloadRaw.toString() === 'True';
+                // convert hass python boolean to js boolean:
+                const payload = payloadRaw.toString().toLowerCase() === 'true';
 
                 const joinActions = new Map([
-                    [permit_join.payload_off, this.#device.enterPairingMode],
-                    [permit_join.payload, this.#device.exitPairingMode],
+                    [permit_join.payload_off, () => this.#device.exitPairingMode()],
+                    [permit_join.payload_on, () => this.#device.enterPairingMode()],
                 ]);
 
                 return joinActions.has(payload)

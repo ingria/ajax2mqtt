@@ -90,8 +90,8 @@ export default class AjaxBridge extends AjaxAbstractDevice {
 
                 case '0':   // search finished
                 case '3': { // search timeout
-                    this.setStateAttribute('permit_join', false);
                     await this.exitPairingMode();
+                    this.setStateAttribute('permit_join', false);
                     break;
                 }
             }
@@ -123,10 +123,16 @@ export default class AjaxBridge extends AjaxAbstractDevice {
     async exitPairingMode() {
         this.log.info('Exiting pairing mode');
 
-        await this.platform.sendCommands([
-            new BridgeCommands.StopPairing(),
+        const commands = [
             new BridgeCommands.EnableWorkMode(),
-        ]);
+        ];
+
+        // stt command won't work unless we're in search mode:
+        if (this.state.permit_join) {
+            commands.unshift(new BridgeCommands.StopPairing());
+        }
+
+        await this.platform.sendCommands(commands);
     }
 
     /**
