@@ -273,8 +273,8 @@ export class HassWrapper {
                 const payload = payloadRaw.toString().toLowerCase() === 'true';
 
                 const armActions = new Map([
-                    [is_armed.payload_disarm, () => this.#device.disarm()],
-                    [is_armed.payload_arm_home, () => this.#device.arm()],
+                    [is_armed.payload_off, () => this.#device.disarm()],
+                    [is_armed.payload_on, () => this.#device.arm()],
                 ]);
 
                 return armActions.has(payload)
