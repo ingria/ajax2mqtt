@@ -223,7 +223,7 @@ export class HassWrapper {
      * @param {?String[]}  changedKeys  Empty to publish the whole state
      * @return {MqttMessage[]}
      */
-    getHassStateUpdateMessages(changedKeys) {
+    #getHassStateUpdateMessages(changedKeys) {
         const deviceSensorNames = Object.keys(this.#getDeviceExposedSensors());
 
         // Don't return any messages if the device changed some value that is not visible in hass:
@@ -254,7 +254,7 @@ export class HassWrapper {
     getStateUpdateMessages(changedKeys) {
         return A2M_HASS_USE_SHARED_STATE_TOPIC
             ? [] // Don't post anything, since we're hooked to the base integration topic
-            : this.getHassStateUpdateMessages(changedKeys); // Otherwise post updates to separate hass topic
+            : this.#getHassStateUpdateMessages(changedKeys); // Otherwise post updates to separate hass topic
     }
 
     /**

@@ -1,3 +1,4 @@
+import { scheduler } from 'node:timers/promises';
 import { HassWrapper } from '#src/integrations/hass/integration.mjs';
 
 export const registerHandlers = function(platform, mqttBroker) {
@@ -5,14 +6,20 @@ export const registerHandlers = function(platform, mqttBroker) {
 
     // Publish autodiscovery messages.
     // https://www.home-assistant.io/integrations/mqtt/#how-to-use-discovery-messages
-    platform.on('deviceReady', (device) => {
+    platform.on('deviceReady', async (device) => {
         const hass = new HassWrapper(device);
         wrappers.set(device.deviceId, hass);
 
-        hass.getHassAutodiscoveryMessages()
-            .concat(hass.getDeviceAvailabilityMessages())
-            .forEach(message => mqttBroker.publish(message));
+        // Publish device sensors config:
+        await mqttBroker.publish(hass.getHassAutodiscoveryMessages());
 
+        // Wait until hass creates or update sensors and subscribes to topics:
+        await scheduler.wait(700);
+
+        // Publish online state:
+        await mqttBroker.publish(hass.getDeviceAvailabilityMessages());
+
+        // Subscribe to command topics:
         hass.getHassDeviceActions().forEach((handler, topic) => {
             mqttBroker.subscribe(topic, handler);
         });
