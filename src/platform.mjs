@@ -39,6 +39,11 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
      */
     #queue = [];
 
+    /**
+     * @type {Number}
+     */
+    #reconnectTimer = undefined;
+
     constructor() {
         super();
 
@@ -80,7 +85,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
             timeout *= 2;
             this.log.info(`Waiting ${timeout}ms till the next attempt...`);
 
-            setTimeout(() => this.#reconnect(timeout), timeout);
+            this.#reconnectTimer = setTimeout(() => this.#reconnect(timeout), timeout);
         });
     }
 
@@ -91,6 +96,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
         this.#devices.forEach(device => device.setOffline());
         this.bridgeDevice.setOffline();
 
+        clearTimeout(this.#reconnectTimer);
         this.#port.removeAllListeners('close');
 
         this.removeAllListeners('deviceStateChange');
