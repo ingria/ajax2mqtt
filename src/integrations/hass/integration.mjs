@@ -108,12 +108,12 @@ export class HassWrapper {
                         'name': 'Permit join',
                     },
                     is_armed: {
-                        '@type': 'alarm_control_panel',
-                        'code_arm_required': false,
-                        'code_disarm_required': false,
+                        '@type': 'switch',
+                        'name': 'Arm',
+                        'icon': 'mdi:shield',
                         'command_topic': this.#getMqttSensorCommandTopic('arm'),
-                        'payload_disarm': 'DISARM',
-                        'payload_arm_home': 'ARM_HOME',
+                        'payload_off': false,
+                        'payload_on': true,
                     },
                 };
             }
@@ -267,8 +267,11 @@ export class HassWrapper {
         if (this.#device.constructor === AjaxBridge) {
             const { is_armed, permit_join } = this.#getDeviceExposedSensors();
 
-            // Define actions for alarm control panel:
-            actions.set(is_armed.command_topic, async (payload) => {
+            // Define actions for alarm:
+            actions.set(is_armed.command_topic, async (payloadRaw) => {
+                // convert hass python boolean to js boolean:
+                const payload = payloadRaw.toString().toLowerCase() === 'true';
+
                 const armActions = new Map([
                     [is_armed.payload_disarm, () => this.#device.disarm()],
                     [is_armed.payload_arm_home, () => this.#device.arm()],
