@@ -145,6 +145,8 @@ export default class AjaxBridge extends AjaxAbstractDevice {
             new BridgeCommands.DeleteDevice(deviceId),
             new BridgeCommands.EnableWorkMode(),
         ]);
+
+        this.setOffline();
     }
 
     /**
