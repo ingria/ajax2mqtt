@@ -111,6 +111,7 @@ export class DisplayFrameInfo extends BridgeCommand {
  * Accept newly found device in search mode. 
  */
 export class AcceptNewDevice extends BridgeCommand {
+    waitForAck = false;
     command = 'y';
 };
 
