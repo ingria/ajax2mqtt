@@ -9,9 +9,8 @@ export const registerHandlers = function(platform, mqttBroker) {
         const hass = new HassWrapper(device);
         wrappers.set(device.deviceId, hass);
 
-        hass.getHassAutodiscoveryMessages().forEach((message) => {
-            mqttBroker.publish(message);
-        });
+        hass.getHassAutodiscoveryMessages().forEach(mqttBroker.publish);
+        hass.getDeviceAvailabilityMessages().forEach(mqttBroker.publish);
 
         hass.getHassDeviceActions().forEach((handler, topic) => {
             mqttBroker.subscribe(topic, handler);
@@ -43,6 +42,7 @@ export const registerHandlers = function(platform, mqttBroker) {
         if (payload === 'online') {
             wrappers.forEach((hass) => {
                 hass.getHassAutodiscoveryMessages().forEach(mqttBroker.publish);
+                hass.getDeviceAvailabilityMessages().forEach(mqttBroker.publish);
                 hass.getHassStateUpdateMessages().forEach(mqttBroker.publish);
             });
         }

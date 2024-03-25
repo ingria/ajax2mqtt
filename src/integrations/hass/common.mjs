@@ -12,6 +12,7 @@ export const schema = Object.freeze({
         'entity_category': 'diagnostic',
         'state_class': 'measurement',
         'enabled_by_default': false,
+        'name': 'Noise',
     },
     rssi: {
         '@type': 'sensor',
@@ -85,7 +86,7 @@ export const schema = Object.freeze({
         'device_class': 'problem',
         'payload_off': false,
         'payload_on': true,
-        'name': 'Smoke chamber malfunction',
+        'name': 'Smoke chamber health',
         'entity_category': 'diagnostic',
     },
     chamber_dust_percent: {
@@ -110,7 +111,7 @@ export const schema = Object.freeze({
         'device_class': 'problem',
         'payload_off': false,
         'payload_on': true,
-        'name': 'CO chamber malfunction',
+        'name': 'CO detector health',
         'entity_category': 'diagnostic',
     },
 });
