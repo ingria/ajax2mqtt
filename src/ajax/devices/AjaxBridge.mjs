@@ -106,8 +106,8 @@ export default class AjaxBridge extends AjaxAbstractDevice {
 
                 case '0': // search finished
                 case '3': { // search timeout
-                    await this.exitPairingMode();
                     this.setStateAttribute('permit_join', false);
+                    await this.exitPairingMode();
                     break;
                 }
             }
