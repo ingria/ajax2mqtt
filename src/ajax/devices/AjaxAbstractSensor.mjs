@@ -83,9 +83,9 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
      */
     handleDevinfoUpdate({ temperature, battery_voltage, backup_battery_ok, backup_battery_voltage }) {
         this.setStateAttribute('temperature', temperature);
-        this.setStateAttribute('voltage', battery_voltage);
+        this.setStateAttribute('voltage', parseFloat(battery_voltage, 10).toFixed(1));
         this.setStateAttribute('backup_battery_low', !backup_battery_ok);
-        this.setStateAttribute('backup_battery_voltage', backup_battery_voltage);
+        this.setStateAttribute('backup_battery_voltage', parseFloat(backup_battery_voltage, 10).toFixed(1));
         this.setStateAttribute('battery', this.#calculateBatteryPercentage(battery_voltage));
         this.setOnline();
     }
