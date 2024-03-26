@@ -13,7 +13,7 @@ export class BaseWrapper {
      * https://github.com/mqttjs/MQTT.js#mqttclientpublishtopic-message-options-callback
      * @return {Object}
      */
-    #getMqttPublishOptions() {
+    static #getMqttPublishOptions() {
         return {
             qos: 1,
         };
@@ -52,7 +52,7 @@ export class BaseWrapper {
      * @return {Map<String, Function>}
      */
     getDeviceActions() {
-        let actions = new Map;
+        let actions = new Map();
 
         if (this.#device.constructor === AjaxBridge) {
             const device = this.#device;
@@ -62,8 +62,8 @@ export class BaseWrapper {
                 [this.#getMqttSensorCommandTopic('disarm'), () => device.disarm()],
                 [this.#getMqttSensorCommandTopic('allow_join'), () => device.enterPairingMode()],
                 [this.#getMqttSensorCommandTopic('disallow_join'), () => device.exitPairingMode()],
-                [this.#getMqttSensorCommandTopic('unpair'), (id) =>  device.unpairDevice(id)],
-                [this.#getMqttSensorCommandTopic('set_offline_threshold'), (value) => device.setOfflineThreshold(value)],
+                [this.#getMqttSensorCommandTopic('unpair'), id => device.unpairDevice(id)],
+                [this.#getMqttSensorCommandTopic('set_offline_threshold'), value => device.setOfflineThreshold(value)],
             ]);
         }
 
@@ -77,6 +77,7 @@ export class BaseWrapper {
         const message = new MqttMessage({
             topic: this.#getMqttSensorStateTopic(),
             payload: { ...this.#device.state },
+            options: BaseWrapper.#getMqttPublishOptions(),
         });
 
         return Array.of(message);

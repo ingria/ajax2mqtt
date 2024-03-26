@@ -1,8 +1,8 @@
 import { scheduler } from 'node:timers/promises';
 import { HassWrapper } from '#src/integrations/hass/integration.mjs';
 
-export const registerHandlers = function(platform, mqttBroker) {
-    const wrappers = new Map;
+export const registerHandlers = function attachEventListenersToPlatform(platform, mqttBroker) {
+    const wrappers = new Map();
 
     // Publish autodiscovery messages.
     // https://www.home-assistant.io/integrations/mqtt/#how-to-use-discovery-messages

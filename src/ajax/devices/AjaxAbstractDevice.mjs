@@ -70,7 +70,7 @@ export default class AjaxAbstractDevice {
                 return true;
             }
 
-            currentState[prop] = newValue;
+            currentState[prop] = newValue; // eslint-disable-line no-param-reassign
             changes[prop] = newValue;
 
             clearTimeout(debounceTimer);
@@ -80,7 +80,7 @@ export default class AjaxAbstractDevice {
                 changes = {};
             }, 1000);
 
-            // Publish availability without debouncer: 
+            // Publish availability without debouncer:
             if ('online' in changes) {
                 this.platform.emit('deviceAvailabilityChange', this, newValue);
             }
@@ -202,7 +202,7 @@ export default class AjaxAbstractDevice {
      * Handles periodic PING messages with device status.
      * @param {Object} SCHEMA_STATUS_SHORT.fields
      */
-    handleStatusUpdate(fields) {
+    handleStatusUpdate() {
         this.log.debug('STATUS handler not implemented');
     }
 

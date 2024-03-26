@@ -98,13 +98,13 @@ export default class AjaxBridge extends AjaxAbstractDevice {
         // bridge is in pairing mode:
         if (Number.isInteger(payload?.flags?.search_result)) {
             switch (payload.flags.search_result.toString()) {
-                case '1':   // search started
+                case '1': // search started
                 case '2': { // search continued
                     this.setStateAttribute('permit_join', true);
                     break;
                 }
 
-                case '0':   // search finished
+                case '0': // search finished
                 case '3': { // search timeout
                     await this.exitPairingMode();
                     this.setStateAttribute('permit_join', false);

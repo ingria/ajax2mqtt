@@ -66,8 +66,9 @@ export const AlarmType = {
     RADIO_JAMMED_MASKING_CLEARED: 111,
 };
 
+/* eslint-disable no-multi-spaces */
 const SCHEMA_STATUS_SHORT = {
-    regex: new RegExp(/^STATUS;([\w\.\-;]+);PING;$/, 'i'),
+    regex: /^STATUS;([\w\.\-;]+);PING;$/i,
     id: MessageStatus,
     fields: {
         device_type: Number,
@@ -90,19 +91,20 @@ const SCHEMA_STATUS_SHORT = {
         current_frequency: Number,         // Frequency on which the status was received (868.0 or 868.5)
     },
 };
+/* eslint-enable no-multi-spaces */
 
 /**
  * Right now long status uses the exact same schema as a short status.
  * The only difference is PING; piece in the end.
  */
 const SCHEMA_STATUS_LONG = {
-    regex: new RegExp(/^STATUS;([\w\.\-;]+);$/, 'i'),
+    regex: /^STATUS;([\w\.\-;]+);$/i,
     id: MessageStatusLong,
     fields: { ...SCHEMA_STATUS_SHORT.fields },
 };
 
 const SCHEMA_DEVINFO = {
-    regex: new RegExp(/^DEVINFO;([\w\.\-;]+);$/, 'i'),
+    regex: /^DEVINFO;([\w\.\-;]+);$/i,
     id: MessageDevinfo,
     fields: {
         device_id: String,
@@ -111,7 +113,7 @@ const SCHEMA_DEVINFO = {
         num_pack: Number,
         noise: Number,
         rssi: Number,
-        rssi_remote: Number, 
+        rssi_remote: Number,
         battery_voltage: value => parseInt(value, 10) / 10,
         power: Number,
         sync_shift: Number,
@@ -130,7 +132,7 @@ const SCHEMA_DEVINFO = {
 };
 
 const SCHEMA_RSTATE = {
-    regex: new RegExp(/^RSTATE;([\w\.\-;=/\s]+);$/, 'i'),
+    regex: /^RSTATE;([\w\.\-;=/\s]+);$/i,
     id: MessageRstate,
     fields: {
         device_id: String,
@@ -145,17 +147,17 @@ const SCHEMA_RSTATE = {
         DPT: ['superframe_depth', Number],
         FRS: ['seconds_from_frame_start', Number],
         FSL: ['free_slot_count', Number],
-        PRT: ['is_armed', (value) => value === '1'],
+        PRT: ['is_armed', value => value === '1'],
         BND: ['band', String],
         ONL: ['online_device_count', Number],
         FUL: ['registered_device_count', Number],
         LLS: ['lowest_level_signal', Number],
         NSL: ['frame_noise_level', Number],
-        ECH: ['echo_commands', (value) => value === '1'],
-        INF: ['display_info_messages', (value) => value === '1'],
-        EXT: ['display_extended_info_messages', (value) => value === '1'],
-        TMR: ['display_timers', (value) => value === '1'],
-        FRM: ['display_frame_info', (value) => value === '1'],
+        ECH: ['echo_commands', value => value === '1'],
+        INF: ['display_info_messages', value => value === '1'],
+        EXT: ['display_extended_info_messages', value => value === '1'],
+        TMR: ['display_timers', value => value === '1'],
+        FRM: ['display_frame_info', value => value === '1'],
         // ERF: ['🤷', Number],
         // EID: ['🤷', Number],
         // ESP: ['🤷', Number],
@@ -167,25 +169,24 @@ const SCHEMA_RSTATE = {
  * Bridge bootup message.
  */
 const SCHEMA_RALLSTATE = {
-    regex: new RegExp(/^RALLSTATE;([\w\.\-;=/\s]+);$/, 'i'),
+    regex: /^RALLSTATE;([\w\.\-;=/\s]+);$/i,
     id: MessageRallstate,
     fields: {
         device_id: String,
     },
     kwargs: {
         VER: ['version', String],
-        PRT: ['is_armed', (value) => value === '1'],
+        PRT: ['is_armed', value => value === '1'],
         FLN: ['frame_length', Number],
-        SET: ['engineering_mode', (value) => value === '0'],
-        CTM: ['communication_test_mode', (value) => value === '1'],
-        STM: ['detection_zone_test_mode', (value) => value === '1'],
-        WFA: ['awaiting_answer', (value) => ['1', 'Y/N'].includes(value.toString())],
-        EXT: ['display_extended_info_messages', (value) => value === '1'],
-        ECH: ['echo_commands', (value) => value === '1'],
-        INF: ['display_info_messages', (value) => value === '1'],
-        EXT: ['display_extended_info_messages', (value) => value === '1'],
-        TMR: ['display_timers', (value) => value === '1'],
-        FRM: ['display_frame_info', (value) => value === '1'],
+        SET: ['engineering_mode', value => value === '0'],
+        CTM: ['communication_test_mode', value => value === '1'],
+        STM: ['detection_zone_test_mode', value => value === '1'],
+        WFA: ['awaiting_answer', value => ['1', 'Y/N'].includes(value.toString())],
+        EXT: ['display_extended_info_messages', value => value === '1'],
+        ECH: ['echo_commands', value => value === '1'],
+        INF: ['display_info_messages', value => value === '1'],
+        TMR: ['display_timers', value => value === '1'],
+        FRM: ['display_frame_info', value => value === '1'],
         ONL: ['online_device_count', Number],
         FUL: ['registered_device_count', Number],
         NSL: ['frame_noise_level', Number],
@@ -197,7 +198,7 @@ const SCHEMA_RALLSTATE = {
 };
 
 const SCHEMA_ALARM = {
-    regex: new RegExp(/^ALARM;([\w\.\-;=\s]+);$/, 'i'),
+    regex: /^ALARM;([\w\.\-;=\s]+);$/i,
     id: MessageAlarm,
     fields: {
         device_type: Number,
@@ -205,12 +206,12 @@ const SCHEMA_ALARM = {
         alarm_type: Number,
     },
     kwargs: {
-        PRT: ['is_armed', (value) => value === '1'],
+        PRT: ['is_armed', value => value === '1'],
     },
 };
 
 const SCHEMA_EVENT = {
-    regex: new RegExp(/^EVENT((:?;[^;]+)+);?$/, 'i'), 
+    regex: /^EVENT((:?;[^;]+)+);?$/i,
     id: MessageEvent,
     fields: {
         device_id: String,
@@ -219,24 +220,23 @@ const SCHEMA_EVENT = {
         VER: ['version', String],
         TYP: ['device_type', Number],
         HNL: ['high_noise_level', Number],
-        AUT: ['auth_success', (value) => value === '0'], // TODO: other responses
-        LOD: ['settings_load_success', (value) => value === '1'],
+        AUT: ['auth_success', value => value === '0'], // TODO: other responses
+        LOD: ['settings_load_success', value => value === '1'],
         TCR: ['time_correction_ms', Number],
         TTC: ['last_sync_correction_minutes', Number],
         LTS: ['unstable_sync', Number],
         DET: ['detection_request', Number],
         ERR: ['sync_error', Number],
-        ATO: ['configurator_timeout_shutdown', (value) => value === '0'],
+        ATO: ['configurator_timeout_shutdown', value => value === '0'],
         SCH: ['search_result', Number],
-        NEW: ['new_device', (value) => value === '1'],
-        WFA: ['awaiting_answer', (value) => ['1', 'Y/N'].includes(value.toString())],
+        NEW: ['new_device', value => value === '1'],
+        WFA: ['awaiting_answer', value => ['1', 'Y/N'].includes(value.toString())],
         FRE: ['subframe_free_cells', Number],
         SPC: ['subframe_cell_count', Number],
-        RED: ['extended_info_read_success', (value) => value === '1'],
-        STR: ['stored_device_count', Number],
+        RED: ['extended_info_read_success', value => value === '1'],
         STR: ['slot_device_count', Number],
         SLT: ['superframe_number', Number],
-        PRT: ['is_armed', (value) => value === '1'],
+        PRT: ['is_armed', value => value === '1'],
         RPT: ['repeated_command_count_total', Number],
         COM: ['repeated_command_count', Number],
         //  WT: ['🤷', Number],
@@ -246,7 +246,7 @@ const SCHEMA_EVENT = {
 };
 
 const SCHEMA_TREAD = {
-    regex: new RegExp(/^TREAD;([\w\.\-;=\s]+);$/, 'i'),
+    regex: /^TREAD;([\w\.\-;=\s]+);$/i,
     id: MessageTread,
     fields: {
         device_id: String,
@@ -259,10 +259,10 @@ const SCHEMA_TREAD = {
 };
 
 const SCHEMA_RESULT = {
-    regex: new RegExp(/^RESULT;([\w\.\-;=\s]+);$/, 'i'),
+    regex: /^RESULT;([\w\.\-;=\s]+);$/i,
     id: MessageResult,
     fields: {
-        success: (value) => value === 'OK',
+        success: value => value === 'OK',
         exit_code: Number,
         device_id: () => 'SYSTEM',
     },

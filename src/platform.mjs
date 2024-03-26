@@ -22,7 +22,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
     /**
      * @type {Map}
      */
-    #devices = new Map;
+    #devices = new Map();
 
     /**
      * @type {SerialPort}
@@ -59,7 +59,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
         }));
 
         this.#port.on('close', () => this.#reconnect());
-        parser.on('data', (data) => this.#handleMessage(data));
+        parser.on('data', data => this.#handleMessage(data));
     }
 
     /**
@@ -82,10 +82,11 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
 
             this.log.error('Cannot open port', error);
 
-            timeout *= 2;
+            timeout *= 2; // eslint-disable-line no-param-reassign
             this.log.info(`Waiting ${timeout}ms till the next attempt...`);
 
             this.#reconnectTimer = setTimeout(() => this.#reconnect(timeout), timeout);
+            return true;
         });
     }
 
@@ -156,7 +157,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
      * @param  {Number} options.payload.device_type
      * @return {undefined}
      */
-    #registerDevice({ device_id, payload: { device_type }}) {
+    #registerDevice({ device_id, payload: { device_type } }) {
         const DeviceClassName = getDeviceByType(device_type);
 
         if (!DeviceClassName) {
@@ -188,7 +189,6 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
     }
 
     /**
-     * Send the message to the UART and acknowlendge receive.
      * @param  {String} command
      * @return {Promise<String>}
      */
@@ -196,7 +196,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
         if (this.#busy) return;
 
         while (this.#queue.length > 0) {
-            await this.#execute(this.#queue.shift());
+            await this.#execute(this.#queue.shift()); // eslint-disable-line no-await-in-loop
         }
     }
 
@@ -205,7 +205,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
      * @return {Promise<undefined>}
      */
     async #execute(command) {
-        const handler = ({ raw, type, payload }) => {
+        const handler = ({ raw, type, payload }) => { // eslint-disable-line consistent-return
             // Command has been echoed:
             if (raw === command.toString()) {
                 this.log.debug(`>>> Command "${command}" was accepted by bridge`);
@@ -214,21 +214,21 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
             // This command doesn't produce RESULT event, meaning that we don't know whether it has
             // been executed succesfully. So we wait some amount of time and hope for the best:
             if (!command.waitForAck) {
-                return setTimeout(() => finish(), 400);
+                return setTimeout(() => finish(), 400); // eslint-disable-line no-use-before-define
             }
 
             // Otherwise wait until command is executed sucessfuly:
             if (type === MessageResult && payload.success) {
                 this.log.debug(`>>> Command "${command} was executed sucessfuly`);
-                return finish();
+                return finish(); // eslint-disable-line no-use-before-define
             }
         };
 
         // Starting timeout timer:
         const timeoutHandle = setTimeout(() => {
             this.log.error(`>>> Command "${command}" was not handled: TIMEOUT`);
-            finish();
-            throw new Error;
+            finish(); // eslint-disable-line no-use-before-define
+            throw new Error();
         }, 3000);
 
         // Clean up after the task is finished:
@@ -247,7 +247,7 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
 
         // Wait until the task is finished:
         while (this.#busy) {
-            await scheduler.wait(100);
+            await scheduler.wait(100); // eslint-disable-line no-await-in-loop
         }
     }
 

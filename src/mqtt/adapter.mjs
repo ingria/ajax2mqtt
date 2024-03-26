@@ -88,6 +88,8 @@ export class MqttAdapter {
             if (msgTopic === topic) {
                 return handle(message.toString());
             }
+
+            return true;
         });
     }
 }

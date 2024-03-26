@@ -80,7 +80,8 @@ export class HassWrapper {
 
         switch (this.#device.constructor) {
             case AjaxFireProtect: {
-                return importFromSchema(...commonSensors,
+                return importFromSchema(
+                    ...commonSensors,
                     'smoke',
                     'smoke_chamber_malfunction',
                     'chamber_dust_percent',
@@ -88,7 +89,8 @@ export class HassWrapper {
             }
 
             case AjaxFireProtectPlus: {
-                return importFromSchema(...commonSensors,
+                return importFromSchema(
+                    ...commonSensors,
                     'smoke',
                     'smoke_chamber_malfunction',
                     'chamber_dust_percent',
@@ -262,7 +264,7 @@ export class HassWrapper {
      * @return {Map<String, Promise>}
      */
     getHassDeviceActions() {
-        const actions = new Map;
+        const actions = new Map();
 
         if (this.#device.constructor === AjaxBridge) {
             const { is_armed, permit_join } = this.#getDeviceExposedSensors();
@@ -311,7 +313,7 @@ export class HassWrapper {
             payload: this.#device.state.online ? 'online' : 'offline',
         });
 
-        return Array.of(message);  
+        return Array.of(message);
     }
 
     /**

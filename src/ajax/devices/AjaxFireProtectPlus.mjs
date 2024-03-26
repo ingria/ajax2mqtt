@@ -1,3 +1,4 @@
+import { AlarmType } from '#src/ajax/schema.mjs';
 import AjaxFireProtect from './AjaxFireProtect.mjs';
 
 export default class AjaxFireProtectPlus extends AjaxFireProtect {

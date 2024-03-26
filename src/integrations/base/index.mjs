@@ -1,7 +1,7 @@
 import { BaseWrapper } from '#src/integrations/base/integration.mjs';
 
-export const registerHandlers = function(platform, mqttBroker) {
-    const wrappers = new Map;
+export const registerHandlers = function attachEventListenersToPlatform(platform, mqttBroker) {
+    const wrappers = new Map();
 
     platform.on('deviceReady', (device) => {
         const base = new BaseWrapper(device);
@@ -12,7 +12,7 @@ export const registerHandlers = function(platform, mqttBroker) {
         });
     });
 
-    platform.on('deviceStateChange', (device, diff) => {
+    platform.on('deviceStateChange', (device, _diff) => {
         wrappers.get(device.deviceId)?.getStateUpdateMessages().forEach((message) => {
             mqttBroker.publish(message);
         });

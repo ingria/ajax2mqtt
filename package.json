@@ -1,7 +1,7 @@
 {
   "name": "ajax2mqtt",
   "displayName": "Ajax Security UART to MQTT bridge",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Bridge between Ajax uartBridge and MQTT",
   "license": "Unlicense",
   "main": "src/index.mjs",
@@ -10,6 +10,7 @@
     "url": "https://github.com/ingria/ajax2mqtt"
   },
   "keywords": [
+    "ajax-security",
     "ajax-uart-bridge",
     "ajax-fireprotect",
     "ajax-homeassistant",
@@ -17,6 +18,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false npx eslint --config ./eslint.config.js --ext .mjs ./src",
     "start": "node ./src/index.mjs"
   },
   "imports": {
@@ -29,5 +31,10 @@
     "consola": "^3.2",
     "mqtt": "^5.4.0",
     "serialport": "^12.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-alias": "^1.1.2"
   }
 }

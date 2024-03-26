@@ -26,7 +26,7 @@ export class MqttMessage {
      * @return {String}
      */
     serialize() {
-        return typeof(this.payload) === "object"
+        return typeof this.payload === 'object'
             ? JSON.stringify(this.payload)
             : this.payload;
     }
