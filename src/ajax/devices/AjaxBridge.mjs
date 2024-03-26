@@ -71,12 +71,28 @@ export default class AjaxBridge extends AjaxAbstractDevice {
      */
     async #handleSystemMessage({ payload }) {
         // new device detected:
-        if (payload?.flags?.new_device && payload?.flags?.awaiting_answer) {
-            await this.platform.sendCommands([
-                new BridgeCommands.AcceptNewDevice(),
-            ]);
+        if (payload?.flags?.new_device) {
+            // new device waiting to accept pairing, we need to agree:
+            if (payload?.flags?.awaiting_answer) {
+                await this.platform.sendCommands([
+                    new BridgeCommands.AcceptNewDevice(),
+                ]);
 
-            return;
+                return;
+            }
+
+            // new device accepted: in that case bridge exists radio search mode automatically,
+            // we need to return to the working mode and request device info:
+            if (Number.isInteger(payload?.flags?.superframe_number)) {
+                this.setStateAttribute('permit_join', false);
+
+                await this.platform.sendCommands([
+                    new BridgeCommands.EnableWorkMode(),
+                    new BridgeCommands.PrintDeviceVersions(),
+                ]);
+
+                return;
+            }
         }
 
         // bridge is in pairing mode:

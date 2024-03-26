@@ -47,9 +47,12 @@ const parseKeyValuePairs = (data, kwargsMapping = {}) => {
  * @return {Object}
  */
 const matchDataWithSchema = (data, schema) => {
-    const fragments = data.split(';').filter(Boolean);
-    const obj = {};
+    const fragments = data
+        .split(';')
+        .filter(Boolean)
+        .map(string => string.trim());
 
+    const obj = {};
     const sequentialFields = Object.entries(schema.fields);
 
     sequentialFields.forEach(([name, castFunction], idx) => {

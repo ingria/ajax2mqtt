@@ -200,6 +200,9 @@ const SCHEMA_ALARM = {
         device_id: String,
         alarm_type: Number,
     },
+    kwargs: {
+        PRT: ['is_armed', (value) => value === '1'],
+    },
 };
 
 const SCHEMA_EVENT = {
@@ -228,9 +231,13 @@ const SCHEMA_EVENT = {
         RED: ['extended_info_read_success', (value) => value === '1'],
         STR: ['stored_device_count', Number],
         STR: ['slot_device_count', Number],
+        SLT: ['superframe_number', Number],
         PRT: ['is_armed', (value) => value === '1'],
         RPT: ['repeated_command_count_total', Number],
         COM: ['repeated_command_count', Number],
+        // WT: ['🤷', Number],
+        // SL: ['🤷', Number],
+        // POS: ['🤷', Number],
     },
 };
 

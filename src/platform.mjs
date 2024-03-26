@@ -211,10 +211,10 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
                 this.log.debug(`>>> Command "${command}" was accepted by bridge`);
             }
 
-            // This command doesn't produce RESULT event, meaning that we don't
-            // need to wait for any output and can exit now:
+            // This command doesn't produce RESULT event, meaning that we don't know whether it has
+            // been executed succesfully. So we wait some amount of time and hope for the best:
             if (!command.waitForAck) {
-                return finish();
+                return setTimeout(() => finish(), 400);
             }
 
             // Otherwise wait until command is executed sucessfuly:
