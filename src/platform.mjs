@@ -2,7 +2,7 @@ import { scheduler } from 'node:timers/promises';
 import { EventEmitter } from 'node:events';
 import { SerialPort, ReadlineParser } from 'serialport';
 import { A2M_SERIAL_PORT, A2M_SERIAL_BAUDRATE, A2M_SERIAL_DELIMITER } from '#src/config.mjs';
-import { MessageStatus, MessageStatusLong, MessageRstate, MessageRallstate, MessageResult, MessageEvent } from '#src/ajax/schema.mjs';
+import { MessageStatus, MessageStatusLong, MessageRstate, MessageRallstate, MessageResult, MessageEvent, MessageDevinfo } from '#src/ajax/schema.mjs';
 import { getDeviceByType, AjaxBridge } from '#src/ajax/devices/index.mjs';
 import BridgeCommands from '#src/ajax/commands.mjs';
 import AjaxBus from '#src/ajax/bus.mjs';
@@ -114,31 +114,40 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
      */
     #handleMessage(message) {
         const msg = parseMessage(message);
+        const ajaxBusEventName = msg.device_id || 'SYSTEM';
 
         this.log.debug(`>>> Received ${msg.type} message`);
         this.log.verbose(msg);
 
-        AjaxBus.emit(msg.device_id || 'SYSTEM', msg);
+        if (msg.type === MessageRstate || msg.type === MessageRallstate) {
+            this.#registerBridge(msg);
+        }
 
-        switch (msg.type) {
-            case MessageRstate:
-            case MessageRallstate: {
-                this.#registerBridge(msg);
-                break;
+        if (!this.#devices.has(msg.device_id)) {
+            // Sometimes we receive events from unregistered device (e.g. when in pairing mode).
+            // Re-route such events to the bridge:
+            if (msg.type === MessageEvent) {
+                AjaxBus.emit('SYSTEM', msg);
             }
 
-            case MessageStatus:
-            case MessageStatusLong: {
+            // Postpone devinfo message to until device is ready:
+            if (msg.type === MessageDevinfo) {
+                const retransmit = () => AjaxBus.emit(ajaxBusEventName, msg);
+
+                while (this.listenerCount('deviceReady', retransmit) > 0) {
+                    this.removeListener('deviceReady', retransmit);
+                }
+
+                this.once('deviceReady', retransmit);
+            }
+
+            // Register device on status messages:
+            if (msg.type === MessageStatus || msg.type === MessageStatusLong) {
                 this.#registerDevice(msg);
-                break;
             }
         }
 
-        // Sometimes we receive events from unregistered device (e.g. when in pairing mode).
-        // Re-route such events to the bridge:
-        if (msg.type === MessageEvent && !this.#devices.has(msg.device_id)) {
-            AjaxBus.emit('SYSTEM', msg);
-        }
+        AjaxBus.emit(ajaxBusEventName, msg);
     }
 
     /**
@@ -148,10 +157,6 @@ export default class AjaxUartBridgePlatform extends EventEmitter {
      * @return {undefined}
      */
     #registerDevice({ device_id, payload: { device_type }}) {
-        if (this.#devices.has(device_id)) {
-            return;
-        }
-
         const DeviceClassName = getDeviceByType(device_type);
 
         if (!DeviceClassName) {
