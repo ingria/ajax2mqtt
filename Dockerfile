@@ -8,8 +8,8 @@ FROM base as dependencies_and_build
 
 COPY package*.json ./
 
-RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers git npm && \
-    npm ci --production --no-audit --omit=dev --no-update-notifier && \
+RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers npm && \
+    npm install --production --no-audit --omit=dev --no-update-notifier && \
     # Serialport needs to be rebuild for Alpine https://serialport.io/docs/9.x.x/guide-installation#alpine-linux
     npm rebuild --build-from-source && \
     apk del .buildtools

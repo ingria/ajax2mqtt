@@ -156,6 +156,10 @@ const SCHEMA_RSTATE = {
         EXT: ['display_extended_info_messages', (value) => value === '1'],
         TMR: ['display_timers', (value) => value === '1'],
         FRM: ['display_frame_info', (value) => value === '1'],
+        // ERF: ['🤷', Number],
+        // EID: ['🤷', Number],
+        // ESP: ['🤷', Number],
+        // EFR: ['🤷', Number],
     },
 };
 
@@ -235,8 +239,8 @@ const SCHEMA_EVENT = {
         PRT: ['is_armed', (value) => value === '1'],
         RPT: ['repeated_command_count_total', Number],
         COM: ['repeated_command_count', Number],
-        // WT: ['🤷', Number],
-        // SL: ['🤷', Number],
+        //  WT: ['🤷', Number],
+        //  SL: ['🤷', Number],
         // POS: ['🤷', Number],
     },
 };
