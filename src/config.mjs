@@ -4,7 +4,7 @@ export const A2M_APP_NAME = pkg.name;
 export const A2M_APP_VERSION = pkg.version;
 export const A2M_APP_SUPPORT_URL = pkg.repository.url;
 
-export const A2M_SERIAL_PORT = process.env.A2M_SERIAL_PORT;
+export const A2M_SERIAL_PORT = process.env.A2M_SERIAL_PORT ?? (process.env.A2M_IS_DOCKER === 'true' ? '/dev/ttyUSB0' : undefined);
 export const A2M_SERIAL_BAUDRATE = 57600;
 export const A2M_SERIAL_DELIMITER = '\r\n';
 export const A2M_MQTT_ADDRESS = 'mqtt://' + (process.env.A2M_MQTT_ADDRESS ?? 'mqtt://127.0.0.1').replace(/^mqtt:\/\//, '');

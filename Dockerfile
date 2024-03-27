@@ -22,5 +22,6 @@ COPY package*.json ./
 COPY src ./src
 
 ENV NODE_ENV production
+ENV A2M_IS_DOCKER true
 
 CMD [ "/sbin/tini", "--", "node", "src/index.mjs" ]
