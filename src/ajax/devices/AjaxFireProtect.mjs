@@ -56,9 +56,25 @@ export default class AjaxFireProtect extends AjaxAbstractSensor {
     /**
      * @inheritDoc
      */
-    handleDevinfoUpdate({ chamber_dust_percent, ...payload }) {
-        super.handleDevinfoUpdate(payload);
+    handleDevinfoUpdate(devinfo) {
+        super.handleDevinfoUpdate(devinfo);
 
-        this.setStateAttribute('chamber_dust_percent', chamber_dust_percent);
+        this.setStateAttribute('chamber_dust_percent', devinfo.chamber_dust_percent);
+        this.setStateAttribute('battery', AjaxFireProtect.#calculateBatteryPercentage(devinfo.battery_voltage));
+    }
+
+    /**
+     * Helper: calculate battery approximate percentage. Values for cr2 batery.
+     * @param  {Number} voltage
+     * @return {Number}
+     */
+    static #calculateBatteryPercentage(voltage) {
+        const nominalVoltage = 3.0;
+        const cutOffVoltage = 2.0;
+
+        // Normalize voltages to zero level:
+        const percent = ((voltage - cutOffVoltage) / (nominalVoltage - cutOffVoltage)) * 100;
+
+        return Math.min(100, Math.max(0, percent));
     }
 }

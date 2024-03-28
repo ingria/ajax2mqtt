@@ -86,7 +86,6 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
         this.setStateAttribute('voltage', parseFloat(battery_voltage, 10).toFixed(1));
         this.setStateAttribute('backup_battery_low', !backup_battery_ok);
         this.setStateAttribute('backup_battery_voltage', parseFloat(backup_battery_voltage, 10).toFixed(1));
-        this.setStateAttribute('battery', AjaxAbstractSensor.#calculateBatteryPercentage(battery_voltage));
         this.setOnline();
     }
 
@@ -97,17 +96,5 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
         if (version) {
             this.setDeviceName(version);
         }
-    }
-
-    /**
-     * Helper: calculate battery approximate percentage.
-     * @param  {Number} voltage
-     * @return {Number}
-     */
-    static #calculateBatteryPercentage(voltage) {
-        const nominalVoltage = 3.0;
-        const percent = Math.round((voltage / nominalVoltage) * 100);
-
-        return Math.min(100, percent);
     }
 }

@@ -38,13 +38,14 @@ export const schema = Object.freeze({
         'entity_category': 'diagnostic',
         'state_class': 'measurement',
         'enabled_by_default': false,
+        'name': 'Battery voltage',
     },
     battery: {
         '@type': 'sensor',
         'device_class': 'battery',
         'unit_of_measurement': '%',
         'entity_category': 'diagnostic',
-        'name': 'Battery voltage',
+        'name': 'Battery',
     },
     battery_low: {
         '@type': 'binary_sensor',
