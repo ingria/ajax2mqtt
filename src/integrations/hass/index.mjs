@@ -51,7 +51,7 @@ export const registerHandlers = function attachEventListenersToPlatform(platform
             wrappers.forEach((hass) => {
                 hass.getHassAutodiscoveryMessages()
                     .concat(hass.getDeviceAvailabilityMessages())
-                    .concat(hass.getHassStateUpdateMessages())
+                    .concat(hass.getStateUpdateMessages())
                     .forEach(message => mqttBroker.publish(message));
             });
         }
