@@ -13,6 +13,9 @@ export default class AjaxFireProtect extends AjaxAbstractSensor {
     getInitialState() {
         return {
             ...super.getInitialState(),
+            backup_battery_voltage: null,
+            backup_battery_low: false,
+            tamper: false,
             smoke: false,
             smoke_chamber_malfunction: false,
             chamber_dust_percent: null,
@@ -59,6 +62,8 @@ export default class AjaxFireProtect extends AjaxAbstractSensor {
     handleDevinfoUpdate(devinfo) {
         super.handleDevinfoUpdate(devinfo);
 
+        this.setStateAttribute('backup_battery_low', !devinfo.backup_battery_ok);
+        this.setStateAttribute('backup_battery_voltage', parseFloat(devinfo.backup_battery_voltage, 10).toFixed(1));
         this.setStateAttribute('chamber_dust_percent', devinfo.chamber_dust_percent);
         this.setStateAttribute('battery', AjaxFireProtect.#calculateBatteryPercentage(devinfo.battery_voltage));
     }

@@ -67,7 +67,7 @@ Available variables:
 | A2M_LOG_LEVEL | error | Logging level |
 
 ## Integrations
-MQTT interation is done with "integration" abstractions. Right now there are two: **base** and **homeassistant**, but it is possible to create more. Integration watches for device state and sends messages to MQTT broker. Also it listens for command topics and controls the physical devices.
+MQTT communication is done with "integration" abstractions. Right now there are two: **base** and **homeassistant**, but it is possible to create more. Integration watches for device state and sends messages to MQTT broker. Also it listens for command topics and controls the physical devices.
 
 ### Base integration
 Base integration sends **all** state changes to `ajax2mqtt/ID/state` topic and subscribes to the following command topics:
@@ -79,7 +79,7 @@ Base integration sends **all** state changes to `ajax2mqtt/ID/state` topic and s
 - ajax2mqtt/ID/unpair _device_id_
 - ajax2mqtt/ID/set_offline_threshold _value_
 
-You may control the device via these topics or create your own integration.
+You may control the device via these topics or create your own integration based on these topics (e.g. [use it in HomeBridge](https://github.com/arachnetech/homebridge-mqttthing/tree/master)).
 
 ### Homeassistant integration
 This integration adds all your Ajax devices to Home Assistant, thanks to the MQTT discovery. If you don’t need this feature, you can set `A2M_HASS_ENABLED` config value to `false`.

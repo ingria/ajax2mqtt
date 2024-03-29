@@ -11,16 +11,18 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
     getInitialState() {
         return {
             ...super.getInitialState(),
-            tamper: false,
             noise: 0,
             rssi: 0,
             temperature: null,
             voltage: null,
-            battery: null,
             battery_low: false,
-            backup_battery_voltage: null,
-            backup_battery_low: false,
         };
+    }
+
+    #updateTamperState(value) {
+        if ('tamper' in this.state) {
+            this.setStateAttribute('tamper', value);
+        }
     }
 
     /**
@@ -28,9 +30,10 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
      */
     handleStatusUpdate({ battery_ok, noise, rssi, tamper_ok }) {
         this.setStateAttribute('battery_low', !battery_ok);
-        this.setStateAttribute('tamper', !tamper_ok);
         this.setStateAttribute('rssi', rssi);
         this.setStateAttribute('noise', noise);
+        this.#updateTamperState(!tamper_ok);
+
         this.setOnline();
     }
 
@@ -42,7 +45,7 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
             case AlarmType.TAMPER_ALARM:
             case AlarmType.LOOP_ALARM:
             case AlarmType.TERMINAL_OPEN: {
-                this.setStateAttribute('tamper', true);
+                this.#updateTamperState(true);
                 break;
             }
 
@@ -52,7 +55,7 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
             case AlarmType.LOOP_RESTORED_DUAL:
             case AlarmType.TERMINAL_CLOSED:
             case AlarmType.TERMINAL_CLOSED_DUAL: {
-                this.setStateAttribute('tamper', false);
+                this.#updateTamperState(false);
                 break;
             }
 
@@ -81,11 +84,9 @@ export default class AjaxAbstractSensor extends AjaxAbstractDevice {
     /**
      * @inheritDoc
      */
-    handleDevinfoUpdate({ temperature, battery_voltage, backup_battery_ok, backup_battery_voltage }) {
+    handleDevinfoUpdate({ temperature, battery_voltage }) {
         this.setStateAttribute('temperature', temperature);
         this.setStateAttribute('voltage', parseFloat(battery_voltage, 10).toFixed(1));
-        this.setStateAttribute('backup_battery_low', !backup_battery_ok);
-        this.setStateAttribute('backup_battery_voltage', parseFloat(backup_battery_voltage, 10).toFixed(1));
         this.setOnline();
     }
 
