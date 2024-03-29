@@ -78,7 +78,7 @@ export default class AjaxAbstractDevice {
             debounceTimer = setTimeout(() => {
                 this.platform.emit('deviceStateChange', this, changes);
                 changes = {};
-            }, 800);
+            }, 600);
 
             // Publish availability without debouncer:
             if ('online' in changes) {
