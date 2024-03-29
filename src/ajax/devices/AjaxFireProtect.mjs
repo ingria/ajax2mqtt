@@ -75,6 +75,6 @@ export default class AjaxFireProtect extends AjaxAbstractSensor {
         // Normalize voltages to zero level:
         const percent = ((voltage - cutOffVoltage) / (nominalVoltage - cutOffVoltage)) * 100;
 
-        return Math.min(100, Math.max(0, percent));
+        return Math.min(100, Math.max(0, Math.round(percent)));
     }
 }
