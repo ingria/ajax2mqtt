@@ -74,14 +74,14 @@ export class HassWrapper {
         const importFromSchema = (...keys) => Object.fromEntries(keys.map(key => [key, schema[key]]));
 
         const commonSensors = [
-            'tamper', 'noise', 'rssi', 'temperature', 'voltage',
-            'battery', 'battery_low', 'backup_battery_voltage', 'backup_battery_low',
+            'tamper', 'noise', 'rssi', 'temperature', 'voltage', 'battery_low', 'backup_battery_voltage', 'backup_battery_low',
         ];
 
         switch (this.#device.constructor) {
             case AjaxFireProtect: {
                 return importFromSchema(
                     ...commonSensors,
+                    'battery',
                     'smoke',
                     'smoke_chamber_malfunction',
                     'chamber_dust_percent',
@@ -91,6 +91,7 @@ export class HassWrapper {
             case AjaxFireProtectPlus: {
                 return importFromSchema(
                     ...commonSensors,
+                    'battery',
                     'smoke',
                     'smoke_chamber_malfunction',
                     'chamber_dust_percent',
