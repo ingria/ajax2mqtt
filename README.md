@@ -30,6 +30,8 @@ It doesn’t use Ajax cloud services, doesn’t require internet connection and 
 - Connect **+5V** pins together
 - Plug the adapter into USB port on your computer
 
+<img src="./schematics.jpg" height="419">
+
 Some tips:
 
 - Note that **transmitting** pin on the board (TX) must be connected to **receiving pin** on the adapter (RX), and not the other way around. These two connections must be crossed: rx -> tx and tx -> rx.
