@@ -1,4 +1,4 @@
-import { SupportedMessages, MessageUnsupported } from './schema.js';
+import { SupportedMessages, MessageUnsupported } from './schema.mjs';
 
 /**
  * Each message can contain "kwargs" flags after "args".
@@ -47,13 +47,16 @@ const parseKeyValuePairs = (data, kwargsMapping = {}) => {
  * @return {Object}
  */
 const matchDataWithSchema = (data, schema) => {
-    const fragments = data.split(';').filter(Boolean);
-    const obj = {};
+    const fragments = data
+        .split(';')
+        .filter(Boolean)
+        .map(string => string.trim());
 
+    const obj = {};
     const sequentialFields = Object.entries(schema.fields);
 
-    sequentialFields.forEach(([name, cast_function], idx) => {
-        obj[name] = cast_function(fragments[idx]);
+    sequentialFields.forEach(([name, castFunction], idx) => {
+        obj[name] = castFunction(fragments[idx]);
     });
 
     // Attach kwargs pairs:
@@ -75,7 +78,7 @@ export default function parseMessage(message) {
         type: MessageUnsupported,
     };
 
-    for (let i = SupportedMessages.length - 1; i >= 0; i--) {
+    for (let i = SupportedMessages.length - 1; i >= 0; i -= 1) {
         const schema = SupportedMessages[i];
         const match = message.match(schema.regex);
 

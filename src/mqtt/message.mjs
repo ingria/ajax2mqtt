@@ -23,10 +23,10 @@ export class MqttMessage {
 
     /**
      * Prepares the values for publishing.
-     * @return {Mixed}
+     * @return {String}
      */
     serialize() {
-        return typeof(this.payload) === "object"
+        return typeof this.payload === 'object'
             ? JSON.stringify(this.payload)
             : this.payload;
     }
