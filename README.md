@@ -32,11 +32,12 @@ It doesn’t use Ajax cloud services, doesn’t require internet connection and 
 
 <img src="./schematics.jpg" height="419">
 
-Some tips:
+### Some tips:
 
 - Note that **transmitting** pin on the board (TX) must be connected to **receiving pin** on the adapter (RX), and not the other way around. These two connections must be crossed: rx -> tx and tx -> rx.
 - +5v pin on adapter may also be called **VDD**.
-- TX and RX pins on adapter my have D letter (e.g. TXD and RXD).
+- TX and RX pins on adapter may have D letter (e.g. TXD and RXD).
+- PCB parts without electronic components can be safely removed, so that the whole construction can fit into smaller enclosure. Just break empty parts away by perforated line.
 
 ## Installation
 The recommended installation method is with docker:

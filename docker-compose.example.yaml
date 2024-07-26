@@ -22,3 +22,5 @@ services:
         limits:
           memory: 128M
           cpus: 1
+    depends_on:
+      - homeassistant
