@@ -1,0 +1,11 @@
+name: Docker Image CI
+on:
+  push:
+    branches: ["master"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --platform linux/amd64 --tag ajax2mqtt:$(cat package.json | tr -d '\n' | tr -d ' ' | cut -d'"' -f4)
