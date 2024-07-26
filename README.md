@@ -49,7 +49,7 @@ $ docker run \
     --restart=unless-stopped \
     --device=/dev/your-usb-ttl-adapter-address:/dev/ttyUSB0 \
     -e A2M_HASS_ENABLED=true \
-    ingria/ajax2mqtt
+    ghcr.io/ingria/ajax2mqtt
 ```
 
 The only line you need to change is `/dev/your-usb-ttl-adapter-address`.

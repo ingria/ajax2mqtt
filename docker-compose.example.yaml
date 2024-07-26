@@ -1,13 +1,15 @@
 services:
   ajax2mqtt:
     container_name: ajax2mqtt
-    image: ingria/ajax2mqtt:latest
+    image: ghcr.io/ingria/ajax2mqtt:latest
+    privileged: false
+    user: "65534:65534" # nobody:nobody, change me!
+    group_add:
+      - dialout
     devices:
       - /dev/your-local-usb-tty-adapter:/dev/ttyUSB0
     restart: unless-stopped
     network_mode: host
-    group_add:
-      - dialout
     environment:
       - A2M_SERIAL_PORT=/dev/ttyUSB0
       - A2M_HASS_ENABLED=true
