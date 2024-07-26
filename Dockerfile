@@ -1,10 +1,10 @@
-FROM alpine:3.19.1 as base
+FROM alpine:3.20 AS base
 
 WORKDIR /app
 RUN apk add --no-cache tini nodejs
 
 # Dependencies and build
-FROM base as dependencies_and_build
+FROM base AS dependencies_and_build
 
 COPY package*.json ./
 
@@ -15,13 +15,13 @@ RUN apk add --no-cache --virtual .buildtools make gcc g++ python3 linux-headers 
     apk del .buildtools
 
 # Release
-FROM base as release
+FROM base AS release
 
 COPY --from=dependencies_and_build /app/node_modules ./node_modules
 COPY package*.json ./
 COPY src ./src
 
-ENV NODE_ENV production
-ENV A2M_IS_DOCKER true
+ENV NODE_ENV=production
+ENV A2M_IS_DOCKER=true
 
 CMD [ "/sbin/tini", "--", "node", "src/index.mjs" ]
