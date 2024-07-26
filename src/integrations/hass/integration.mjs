@@ -314,7 +314,7 @@ export class HassWrapper {
         const message = new MqttMessage({
             topic: this.#getMqttSensorAvailabilityTopic(),
             options: this.#getMqttPublishOptions(),
-            payload: this.#device.state.online ? 'online' : 'offline',
+            payload: this.#device.isOnline ? 'online' : 'offline',
         });
 
         return Array.of(message);

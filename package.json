@@ -1,7 +1,7 @@
 {
+  "version": "2.0.8",
   "name": "ajax2mqtt",
   "displayName": "Ajax Security UART to MQTT bridge",
-  "version": "2.0.7",
   "description": "Bridge between Ajax uartBridge and MQTT",
   "license": "Unlicense",
   "main": "src/index.mjs",

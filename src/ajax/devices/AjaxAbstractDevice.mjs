@@ -37,6 +37,16 @@ export default class AjaxAbstractDevice {
     #deviceState = {};
 
     /**
+     * @type {Boolean}
+     */
+    isOnline = false;
+
+    /**
+     * @type {Number}
+     */
+    lastOnlineTs = 0;
+
+    /**
      * @param  {String} deviceId
      * @param  {Object} platform
      */
@@ -79,11 +89,6 @@ export default class AjaxAbstractDevice {
                 this.platform.emit('deviceStateChange', this, changes);
                 changes = {};
             }, 600);
-
-            // Publish availability without debouncer:
-            if ('online' in changes) {
-                this.platform.emit('deviceAvailabilityChange', this, newValue);
-            }
 
             return true;
         };
@@ -138,9 +143,7 @@ export default class AjaxAbstractDevice {
      * @return {Object}
      */
     getInitialState() {
-        return {
-            online: false,
-        };
+        return {};
     }
 
     /**
@@ -183,9 +186,19 @@ export default class AjaxAbstractDevice {
      * Helpers for setting device online and offline state.
      */
     setOnline() {
-        this.setStateAttribute('online', true);
+        const now = Date.now();
+        const republishOnlineAfterMs = 5 * 60 * 1000; // 5 minutes
 
+        this.isOnline = true;
         this.log.debug(`${this.deviceId}: device is now ONLINE`);
+
+        // Publish ONLINE state once in a while, so that homeassistant doesn't mark
+        // device as unavailable:
+        if (this.lastOnlineTs < (now - republishOnlineAfterMs)) {
+            this.log.debug(`${this.deviceId}: re-publishing ONLINE state`);
+            this.platform.emit('deviceAvailabilityChange', this, this.isOnline);
+            this.lastOnlineTs = now;
+        }
 
         if (!this.isBridge()) {
             this.log.debug('Setting parent bridge to ONLINE as well');
@@ -194,8 +207,12 @@ export default class AjaxAbstractDevice {
     }
 
     setOffline() {
-        this.setStateAttribute('online', false);
+        this.isOnline = false;
+        this.lastOnlineTs = 0;
+
         this.log.debug(`${this.deviceId}: device is now OFFLINE`);
+
+        this.platform.emit('deviceAvailabilityChange', this, this.isOnline);
     }
 
     /**
