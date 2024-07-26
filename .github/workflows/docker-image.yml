@@ -25,7 +25,7 @@ jobs:
     - name: Generate version tag
       id: version
       shell: bash
-      run: echo value=$(cat package.json | tr -d '\n' | tr -d ' ' | cut -d'"' -f4)
+      run: echo value=$(cat package.json | tr -d '\n' | tr -d ' ' | cut -d'"' -f4) >> $GITHUB_OUTPUT
 
     - name: Docker meta
       id: metadata
