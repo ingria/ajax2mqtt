@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - src/*
+      - .github/workflows/*
 jobs:
   build:
     runs-on: ubuntu-latest
