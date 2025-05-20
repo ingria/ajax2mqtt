@@ -19,7 +19,7 @@ It doesn’t use Ajax cloud services, doesn’t require internet connection and 
 
 ## Required Hardware
 - [Ajax uartBridge](https://ajax.systems/products/uartbridge) to interface wireless Ajax devices. Costs about $30 ([where to buy](https://ajax.systems/where-to-buy)).
-- USB-TTL adapter. Any cheap adapter will work fine, I am using [this one](https://a.aliexpress.com/_mscVzYx). Costs about $1.
+- USB-TTL adapter *or* any hardware that understands UART protocol (Raspberry Pi, Orange Pi, etc). If you go with usb-ttl, any cheap adapter will work just fine. I am using [this one](https://a.aliexpress.com/_mscVzYx). Costs about $1.
 - Jumper wires with DuPont female-female connector. Sometimes they are included with usb-ttl adapter. Costs about another $1.
 - Plastic enclosure box (optional). Minimal size is 60x60x15mm.
 
@@ -33,11 +33,22 @@ It doesn’t use Ajax cloud services, doesn’t require internet connection and 
 <img src="./schematics.jpg" height="419">
 
 ### Some tips:
-
 - Note that **transmitting** pin on the board (TX) must be connected to **receiving pin** on the adapter (RX), and not the other way around. These two connections must be crossed: rx -> tx and tx -> rx.
 - +5v pin on adapter may also be called **VDD**.
 - TX and RX pins on adapter may have D letter (e.g. TXD and RXD).
 - PCB parts without electronic components can be safely removed, so that the whole construction can fit into smaller enclosure. Just break empty parts away by perforated line.
+
+### Using single-board computers
+If you're using an uart-capable SBC (like Raspberry Pi), you may connect the AjaxBridge board directly to its GPIO pins (without USB adapter).
+
+For example, in **RPi Zero W** you'll need these GPIO pins (physical):
+
+- **6** (GND)
+- **4** (5V)
+- **8** (GPIO 14, TXD)
+- **10** (GPIO 15, RXD).
+
+The device name is `/dev/serial0`. Note: serial port may not be enabled by default. If so, you can enable it with the `raspi-config` command (Interface Options - Serial Port). 
 
 ## Installation
 The recommended installation method is with docker:
